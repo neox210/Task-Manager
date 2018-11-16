@@ -1,12 +1,8 @@
 ﻿#region
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Configuration;
 using System.Linq;
 using System.Windows.Input;
-using System.Windows.Threading;
 using CommonServiceLocator;
 using TaskManager.Models;
 using TaskManager.Models.Settings;
@@ -107,12 +103,14 @@ namespace TaskManager.ViewModels
         {
             _exceptionInteceptor.TaskInterceptor(() =>
             {
-            if (!TaskMeetsConditions(EditableTask)) return;
+                if (!TaskMeetsConditions(EditableTask)) return;
                 if (!_dialogHelper.DecisionDialog("Do you want add this task as new one?")) return;
                 _unitOfWork.Tasks.Add(EditableTask);
                 _unitOfWork.Complete();
                 TaskList.Add(EditableTask);
                 _dialogHelper.SuccessDialog("Successfully added new task");
+                EditableTask = CreateDefaultTask();
+                RaisePropertyChangedEvent(nameof(EditableTask));
             });     
         }
 
@@ -181,6 +179,7 @@ namespace TaskManager.ViewModels
                 TaskList.AddRange(tasks);
                 EditableTask = CreateDefaultTask();
                 RaisePropertyChangedEvent(nameof(TaskList));
+                RaisePropertyChangedEvent(nameof(EditableTask));
             });
         }
     }
